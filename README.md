@@ -1,2 +1,83 @@
 # example-union-workflows
-Examples of end-to-end ML workflows built with Union
+
+This repository contains examples of end-to-end ML workflows built with **[Union](https://union.ai/)**, showcasing Union-specific features for training, inference, and serving.
+
+## Highlights
+
+### 1. **Train a Keras Model**
+- Build container images using `ImageSpec` with Union's **remote image builder**:  
+  → [`./orchestration/container_images.py`](./orchestration/container_images.py)  
+- Train a simple Keras model and generate a **Union Artifact**:  
+  → [`./tasks/train.py`](./tasks/train.py)  
+- Define the model artifact with Union’s native artifact abstraction:  
+  → [`./orchestration/artifacts.py`](./orchestration/artifacts.py)
+
+### 2. **Run Batch Inference at Scale**
+- Perform scalable and parallel inference using Union’s **`map`** construct:  
+  → [`./workflows/predict_conv_model.py`](./workflows/predict_conv_model.py)  
+- **Massively accelerate batch inference** with Union **Actors**:  
+  → [`./orchestration/actor_env.py`](./orchestration/actor_env.py)  
+  - Union Actors eliminate container startup/teardown time  
+  - Cache and reuse model loading logic:  
+    → [`./tasks/predict.py`](./tasks/predict.py)
+
+### 3. **Serve the Keras Model via a FastAPI App**
+- Deploy a FastAPI app that pulls the **Union Model Artifact** and serves it with Union:  
+  → [`./apps/simple-fastapi/app.py`](./apps/simple-fastapi/app.py)
+
+---
+
+## 🚀 Get Started
+
+1. Create a Python environment of your choice  
+2. Install dependencies:  
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+---
+
+## 🛠️ Run Training and Prediction Workflows
+
+```bash
+# Run training workflow
+union run -p <your-project> --remote workflows/train_conv_model.py wf
+```
+
+> Wait for the training execution to complete and the Model Artifact to be generated.
+
+```bash
+# Run prediction workflow using the trained model
+union run -p <your-project> --remote workflows/predict_conv_model.py wf
+```
+
+---
+
+## 📅 Setup Launchplans
+
+Register and activate launchplans for training and prediction, including:
+- Fixed-rate scheduling
+- Notifications
+- Artifact triggers
+
+```bash
+union register -p <your-project> ./launchplans --activate-launchplans
+```
+
+---
+
+## 🌐 Serve the Keras Model with FastAPI
+
+Deploy the FastAPI app using Union:
+
+```bash
+union deploy apps -p <your-project> apps/simple-fastapi/app.py simple-fastapi
+```
+
+Then open your deployed app at:
+
+```
+<your-deployed-endpoint>/docs
+```
+
+To apply changes after modifying the app code, re-run the deploy command above.
